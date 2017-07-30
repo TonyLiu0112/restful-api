@@ -188,6 +188,7 @@ public class RestfulBuilder {
 
     /**
      * 请求被锁定 不可用
+     *
      * @return
      */
     public static ResponseEntity<RestfulResponse> locked() {
