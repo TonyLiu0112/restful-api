@@ -3,38 +3,49 @@ package com.wrench.utils.restfulapi.response;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
-public class RestfulResponse {
+public class RestfulResponse<T> {
 
+    /**
+     * http响应码
+     */
     private HttpStatus status;
-    private Object data;
-    private String error;
+
+    /**
+     * 响应数据
+     */
+    private T data;
+
+    /**
+     * 响应消息
+     */
+    private String message;
 
     public RestfulResponse() {
         this(null);
     }
 
-    public RestfulResponse(Object data) {
+    public RestfulResponse(T data) {
         this.data = data;
-        this.error = null;
+        this.message = null;
     }
 
-    public ResponseEntity<RestfulResponse> send(HttpStatus status) {
+    public ResponseEntity<RestfulResponse<T>> send(HttpStatus status) {
         this.status = status;
         return new ResponseEntity<>(this, status);
     }
 
-    public ResponseEntity<RestfulResponse> send(HttpStatus status, String error) {
+    public ResponseEntity<RestfulResponse<T>> send(HttpStatus status, String message) {
         this.status = status;
-        this.error = error;
+        this.message = message;
         return new ResponseEntity<>(this, status);
     }
 
-    public <R> R getData() {
-        return (R) data;
+    public T getData() {
+        return data;
     }
 
-    public String getError() {
-        return error;
+    public String getMessage() {
+        return message;
     }
 
     public HttpStatus getStatus() {
@@ -45,12 +56,12 @@ public class RestfulResponse {
         this.status = status;
     }
 
-    public void setData(Object data) {
+    public void setData(T data) {
         this.data = data;
     }
 
-    public void setError(String error) {
-        this.error = error;
+    public void setMessage(String message) {
+        this.message = message;
     }
 
 }
