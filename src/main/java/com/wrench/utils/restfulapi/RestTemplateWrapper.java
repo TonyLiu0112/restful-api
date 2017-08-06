@@ -13,9 +13,12 @@ import org.springframework.web.client.RestTemplate;
 import java.net.URI;
 import java.util.List;
 
+/**
+ * {@link RestTemplate} 包装类
+ *
+ * @author Tony
+ */
 public class RestTemplateWrapper {
-
-    private Logger logger = LoggerFactory.getLogger(RestTemplateWrapper.class);
 
     private final RestTemplate restTemplate;
     private final HttpOps ops;
@@ -114,7 +117,7 @@ public class RestTemplateWrapper {
                 log.debug("Http response: {}", JSON.toJSONString(responseEntity, true));
                 restResponse = responseHandler(responseEntity, dataClazz, parser);
             } catch (HttpStatusCodeException e) {
-                log.error("Server response 4xx/5xx response. <{} {}>", e.getStatusCode(), e.getMessage());
+                log.error("Server 4xx/5xx response. <{} {}>", e.getStatusCode(), e.getMessage());
                 restResponse.setStatus(e.getStatusCode());
                 restResponse.setMessage("Success to remote resources.");
             } catch (Exception e) {
@@ -133,7 +136,7 @@ public class RestTemplateWrapper {
                 log.debug("Http response: {}", JSON.toJSONString(responseEntity, true));
                 restResponse = responseHandler(responseEntity, dataClazz, parser);
             } catch (HttpStatusCodeException e) {
-                log.error("Server response 4xx/5xx response. <{} {}>", e.getStatusCode(), e.getMessage());
+                log.error("Server 4xx/5xx response. <{} {}>", e.getStatusCode(), e.getMessage());
                 restResponse.setStatus(e.getStatusCode());
                 restResponse.setMessage(e.getMessage());
             } catch (Exception e) {
@@ -154,7 +157,7 @@ public class RestTemplateWrapper {
                 restResponse.setStatus(responseEntity.getStatusCode());
                 restResponse.setMessage(responseEntity.getStatusCode().getReasonPhrase());
             } catch (HttpStatusCodeException e) {
-                log.error("Server response 4xx/5xx response. <{} {}>", e.getStatusCode(), e.getMessage());
+                log.error("Server 4xx/5xx response. <{} {}>", e.getStatusCode(), e.getMessage());
                 restResponse.setStatus(e.getStatusCode());
                 restResponse.setMessage(e.getMessage());
             } catch (Exception e) {
@@ -173,7 +176,7 @@ public class RestTemplateWrapper {
                 log.debug("Http response: {}", JSON.toJSONString(responseEntity, true));
                 restResponse = responseHandler(responseEntity, dataClazz, parser);
             } catch (HttpStatusCodeException e) {
-                log.error("Server response 4xx/5xx response. <{} {}>", e.getStatusCode(), e.getMessage());
+                log.error("Server 4xx/5xx response. <{} {}>", e.getStatusCode(), e.getMessage());
                 restResponse.setStatus(e.getStatusCode());
                 restResponse.setMessage(e.getMessage());
             } catch (Exception e) {
