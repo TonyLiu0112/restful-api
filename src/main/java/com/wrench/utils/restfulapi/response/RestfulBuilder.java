@@ -8,20 +8,39 @@ public class RestfulBuilder {
     /**
      * 服务器成功返回用户请求的数据，该操作是幂等的
      *
-     * @param data
      * @return
      */
-    public static ResponseEntity<RestfulResponse> ok(Object data) {
-        return new RestfulResponse(data).send(HttpStatus.OK);
+    public static ResponseEntity<RestfulResponse> ok() {
+        return ok(null);
     }
 
     /**
      * 服务器成功返回用户请求的数据，该操作是幂等的
      *
+     * @param data
      * @return
      */
-    public static ResponseEntity<RestfulResponse> ok() {
-        return RestfulBuilder.ok(null);
+    public static ResponseEntity<RestfulResponse> ok(Object data) {
+        return ok(data, null);
+    }
+
+    /**
+     * 服务器成功返回用户请求的数据，该操作是幂等的
+     *
+     * @param data
+     * @return
+     */
+    public static ResponseEntity<RestfulResponse> ok(Object data, String message) {
+        return emitter(data, null, message, HttpStatus.OK);
+    }
+
+    /**
+     * 新建或修改数据成功
+     *
+     * @return
+     */
+    public static ResponseEntity<RestfulResponse> created() {
+        return created(null);
     }
 
     /**
@@ -31,26 +50,11 @@ public class RestfulBuilder {
      * @return
      */
     public static ResponseEntity<RestfulResponse> created(Object data) {
-        return new RestfulResponse(data).send(HttpStatus.CREATED);
+        return created(data, null);
     }
 
-    /**
-     * 新建或修改数据成功
-     *
-     * @return
-     */
-    public static ResponseEntity<RestfulResponse> created() {
-        return RestfulBuilder.created(null);
-    }
-
-    /**
-     * 表示一个请求已经进入后台排队（异步任务）
-     *
-     * @param data
-     * @return
-     */
-    public static ResponseEntity<RestfulResponse> accepted(Object data) {
-        return new RestfulResponse(data).send(HttpStatus.ACCEPTED);
+    public static ResponseEntity<RestfulResponse> created(Object data, String message) {
+        return emitter(data, null, message, HttpStatus.CREATED);
     }
 
     /**
@@ -59,7 +63,30 @@ public class RestfulBuilder {
      * @return
      */
     public static ResponseEntity<RestfulResponse> accepted() {
-        return RestfulBuilder.accepted(null);
+        return accepted(null);
+    }
+
+    public static ResponseEntity<RestfulResponse> accepted(Object data) {
+        return accepted(data, null);
+    }
+
+    /**
+     * 表示一个请求已经进入后台排队（异步任务）
+     *
+     * @param data
+     * @return
+     */
+    public static ResponseEntity<RestfulResponse> accepted(Object data, String message) {
+        return emitter(data, null, message, HttpStatus.ACCEPTED);
+    }
+
+    /**
+     * 用户删除数据成功
+     *
+     * @return
+     */
+    public static ResponseEntity<RestfulResponse> deleted() {
+        return deleted(null);
     }
 
     /**
@@ -69,16 +96,26 @@ public class RestfulBuilder {
      * @return
      */
     public static ResponseEntity<RestfulResponse> deleted(Object data) {
-        return new RestfulResponse(data).send(HttpStatus.NO_CONTENT);
+        return deleted(data, null);
     }
 
     /**
      * 用户删除数据成功
      *
+     * @param data
      * @return
      */
-    public static ResponseEntity<RestfulResponse> deleted() {
-        return RestfulBuilder.deleted(null);
+    public static ResponseEntity<RestfulResponse> deleted(Object data, String message) {
+        return emitter(data, null, message, HttpStatus.NO_CONTENT);
+    }
+
+    /**
+     * 错误的请求
+     *
+     * @return
+     */
+    public static ResponseEntity<RestfulResponse> badRequest() {
+        return badRequest(null);
     }
 
     /**
@@ -88,26 +125,24 @@ public class RestfulBuilder {
      * @return
      */
     public static ResponseEntity<RestfulResponse> badRequest(Object data) {
-        return new RestfulResponse(data).send(HttpStatus.BAD_REQUEST);
+        return badRequest(data, null);
     }
 
     /**
      * 错误的请求
      *
-     * @return
-     */
-    public static ResponseEntity<RestfulResponse> badRequest() {
-        return RestfulBuilder.badRequest(null);
-    }
-
-    /**
-     * 用户访问未授权
-     *
      * @param data
      * @return
      */
-    public static ResponseEntity<RestfulResponse> unauthorized(Object data) {
-        return new RestfulResponse(data).send(HttpStatus.UNAUTHORIZED);
+    public static ResponseEntity<RestfulResponse> badRequest(Object data, String message) {
+        if (data != null && data instanceof ErrorResponse)
+            return badRequest(null, (ErrorResponse) data, message);
+        return badRequest(data, null, message);
+    }
+
+
+    public static ResponseEntity<RestfulResponse> badRequest(Object data, ErrorResponse errRes, String message) {
+        return emitter(data, errRes, message, HttpStatus.BAD_REQUEST);
     }
 
     /**
@@ -116,7 +151,36 @@ public class RestfulBuilder {
      * @return
      */
     public static ResponseEntity<RestfulResponse> unauthorized() {
-        return RestfulBuilder.unauthorized(null);
+        return unauthorized(null);
+    }
+
+    public static ResponseEntity<RestfulResponse> unauthorized(Object data) {
+        return unauthorized(null, null);
+    }
+
+    public static ResponseEntity<RestfulResponse> unauthorized(Object data, String message) {
+        if (data != null && data instanceof ErrorResponse)
+            return unauthorized(null, (ErrorResponse) data, message);
+        return unauthorized(data, null, message);
+    }
+
+    /**
+     * 用户访问未授权
+     *
+     * @param data
+     * @return
+     */
+    public static ResponseEntity<RestfulResponse> unauthorized(Object data, ErrorResponse errRes, String message) {
+        return emitter(data, errRes, message, HttpStatus.UNAUTHORIZED);
+    }
+
+    /**
+     * 用户访问获得授权，但无访问权限
+     *
+     * @return
+     */
+    public static ResponseEntity<RestfulResponse> forbidden() {
+        return forbidden(null);
     }
 
     /**
@@ -126,16 +190,38 @@ public class RestfulBuilder {
      * @return
      */
     public static ResponseEntity<RestfulResponse> forbidden(Object data) {
-        return new RestfulResponse(data).send(HttpStatus.FORBIDDEN);
+        return forbidden(data, null);
     }
 
     /**
      * 用户访问获得授权，但无访问权限
      *
+     * @param data
      * @return
      */
-    public static ResponseEntity<RestfulResponse> forbidden() {
-        return RestfulBuilder.forbidden(null);
+    public static ResponseEntity<RestfulResponse> forbidden(Object data, String message) {
+        if (data != null && data instanceof ErrorResponse)
+            return forbidden(null, (ErrorResponse) data, message);
+        return forbidden(data, null, message);
+    }
+
+    /**
+     * 用户访问获得授权，但无访问权限
+     *
+     * @param data
+     * @return
+     */
+    public static ResponseEntity<RestfulResponse> forbidden(Object data, ErrorResponse errRes, String message) {
+        return emitter(data, errRes, message, HttpStatus.FORBIDDEN);
+    }
+
+    /**
+     * 资源未找到
+     *
+     * @return
+     */
+    public static ResponseEntity<RestfulResponse> notFound() {
+        return notFound(null);
     }
 
     /**
@@ -145,16 +231,38 @@ public class RestfulBuilder {
      * @return
      */
     public static ResponseEntity<RestfulResponse> notFound(Object data) {
-        return new RestfulResponse(data).send(HttpStatus.NOT_FOUND);
+        return notFound(data, null);
     }
 
     /**
      * 资源未找到
      *
+     * @param data
      * @return
      */
-    public static ResponseEntity<RestfulResponse> notFound() {
-        return RestfulBuilder.notFound(null);
+    public static ResponseEntity<RestfulResponse> notFound(Object data, String message) {
+        if (data != null && data instanceof ErrorResponse)
+            return notFound(null, (ErrorResponse) data, message);
+        return notFound(data, null, message);
+    }
+
+    /**
+     * 资源未找到
+     *
+     * @param data
+     * @return
+     */
+    public static ResponseEntity<RestfulResponse> notFound(Object data, ErrorResponse errRes, String message) {
+        return emitter(data, errRes, message, HttpStatus.NOT_FOUND);
+    }
+
+    /**
+     * POST PUT PATCH 请求对象参数验证错误
+     *
+     * @return
+     */
+    public static ResponseEntity<RestfulResponse> unprocesableEntity() {
+        return unprocesableEntity(null);
     }
 
     /**
@@ -164,16 +272,39 @@ public class RestfulBuilder {
      * @return
      */
     public static ResponseEntity<RestfulResponse> unprocesableEntity(Object data) {
-        return new RestfulResponse(data).send(HttpStatus.UNPROCESSABLE_ENTITY);
+        return unprocesableEntity(data, null);
     }
 
     /**
      * POST PUT PATCH 请求对象参数验证错误
      *
+     * @param data
      * @return
      */
-    public static ResponseEntity<RestfulResponse> unprocesableEntity() {
-        return RestfulBuilder.unprocesableEntity(null);
+    public static ResponseEntity<RestfulResponse> unprocesableEntity(Object data, String message) {
+        if (data != null && data instanceof ErrorResponse)
+            return unprocesableEntity(null, (ErrorResponse) data, message);
+        return unprocesableEntity(data, null, message);
+    }
+
+    /**
+     * POST PUT PATCH 请求对象参数验证错误
+     *
+     * @param data
+     * @return
+     */
+    public static ResponseEntity<RestfulResponse> unprocesableEntity(Object data, ErrorResponse errRes, String message) {
+        return emitter(data, errRes, message, HttpStatus.UNPROCESSABLE_ENTITY);
+    }
+
+
+    /**
+     * 请求被锁定 不可用
+     *
+     * @return
+     */
+    public static ResponseEntity<RestfulResponse> locked() {
+        return locked(null);
     }
 
     /**
@@ -183,35 +314,116 @@ public class RestfulBuilder {
      * @return
      */
     public static ResponseEntity<RestfulResponse> locked(Object data) {
-        return new RestfulResponse(data).send(HttpStatus.LOCKED);
+        return locked(data, null);
     }
 
     /**
      * 请求被锁定 不可用
      *
+     * @param data
      * @return
      */
-    public static ResponseEntity<RestfulResponse> locked() {
-        return RestfulBuilder.locked(null);
+    public static ResponseEntity<RestfulResponse> locked(Object data, String message) {
+        if (data != null && data instanceof ErrorResponse)
+            return locked(null, (ErrorResponse) data, message);
+        return locked(data, null, message);
     }
 
     /**
-     * 内部服务错误，请和管理员联系
+     * 请求被锁定 不可用
+     *
+     * @param data
+     * @return
+     */
+    public static ResponseEntity<RestfulResponse> locked(Object data, ErrorResponse errRes, String message) {
+        return emitter(data, errRes, message, HttpStatus.LOCKED);
+    }
+
+    /**
+     * 内部服务错误
+     *
+     * @return
+     */
+    public static ResponseEntity<RestfulResponse> serverError() {
+        return serverError(null);
+    }
+
+    /**
+     * 内部服务错误
      *
      * @param data
      * @return
      */
     public static ResponseEntity<RestfulResponse> serverError(Object data) {
-        return new RestfulResponse(data).send(HttpStatus.INTERNAL_SERVER_ERROR);
+        return serverError(data, null);
     }
 
     /**
-     * 内部服务错误，请和管理员联系
+     * 内部服务错误
+     *
+     * @param data
+     * @return
+     */
+    public static ResponseEntity<RestfulResponse> serverError(Object data, String message) {
+        if (data != null && data instanceof ErrorResponse)
+            return serverError(null, (ErrorResponse) data, message);
+        return serverError(data, null, message);
+    }
+
+    /**
+     * 内部服务错误
+     *
+     * @param data
+     * @return
+     */
+    public static ResponseEntity<RestfulResponse> serverError(Object data, ErrorResponse errRes, String message) {
+        return emitter(data, errRes, message, HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+
+    /**
+     * 服务未实现
      *
      * @return
      */
-    public static ResponseEntity<RestfulResponse> serverError() {
-        return RestfulBuilder.serverError(null);
+    public static ResponseEntity<RestfulResponse> notImplemented() {
+        return notImplemented(null);
+    }
+
+    /**
+     * 服务未实现
+     *
+     * @param data
+     * @return
+     */
+    public static ResponseEntity<RestfulResponse> notImplemented(Object data) {
+        return notImplemented(data, null);
+    }
+
+    /**
+     * 服务未实现
+     *
+     * @param data
+     * @return
+     */
+    public static ResponseEntity<RestfulResponse> notImplemented(Object data, String message) {
+        if (data != null && data instanceof ErrorResponse)
+            return notImplemented(null, (ErrorResponse) data, message);
+        return notImplemented(data, null, message);
+    }
+
+    /**
+     * 服务未实现
+     *
+     * @param data
+     * @return
+     */
+    public static ResponseEntity<RestfulResponse> notImplemented(Object data, ErrorResponse errRes, String message) {
+        return emitter(data, errRes, message, HttpStatus.NOT_IMPLEMENTED);
+    }
+
+
+    private static ResponseEntity<RestfulResponse> emitter(Object data, ErrorResponse errRes, String message, HttpStatus httpStatus) {
+        return new RestfulResponse(data, errRes, message).send(httpStatus);
     }
 
 }

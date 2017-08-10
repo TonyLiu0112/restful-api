@@ -20,23 +20,31 @@ public class RestfulResponse<T> {
      */
     private String message;
 
+    private ErrorResponse errData;
+
     public RestfulResponse() {
         this(null);
     }
 
-    public RestfulResponse(T data) {
+    RestfulResponse(T data) {
         this.data = data;
-        this.message = null;
     }
 
-    public ResponseEntity<RestfulResponse<T>> send(HttpStatus status) {
-        this.status = status;
-        return new ResponseEntity<>(this, status);
+    RestfulResponse(T data, ErrorResponse errData) {
+        this.data = data;
+        this.errData = errData;
     }
 
-    public ResponseEntity<RestfulResponse<T>> send(HttpStatus status, String message) {
-        this.status = status;
+    RestfulResponse(T data, ErrorResponse errData, String message) {
+        this.data = data;
+        this.errData = errData;
         this.message = message;
+    }
+
+    ResponseEntity<RestfulResponse<T>> send(HttpStatus status) {
+        this.status = status;
+        if (this.message == null || "".equals(this.message.trim()))
+            this.message = status.getReasonPhrase();
         return new ResponseEntity<>(this, status);
     }
 
@@ -64,4 +72,11 @@ public class RestfulResponse<T> {
         this.message = message;
     }
 
+    public ErrorResponse getErrData() {
+        return errData;
+    }
+
+    public void setErrData(ErrorResponse errData) {
+        this.errData = errData;
+    }
 }
