@@ -3,7 +3,13 @@ package com.wrench.utils.restfulapi.response;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
+import static org.springframework.http.HttpStatus.*;
+
 public class RestfulBuilder {
+
+    public static <R> ResponseEntity<R> ok4Fallback() {
+        return new ResponseEntity<>(OK);
+    }
 
     /**
      * 服务器成功返回用户请求的数据，该操作是幂等的
@@ -31,7 +37,11 @@ public class RestfulBuilder {
      * @return
      */
     public static ResponseEntity<RestfulResponse> ok(Object data, String message) {
-        return emitter(data, null, message, HttpStatus.OK);
+        return emitter(data, null, message, OK);
+    }
+
+    public static <R> ResponseEntity<R> created4Fallback() {
+        return new ResponseEntity<>(CREATED);
     }
 
     /**
@@ -54,7 +64,11 @@ public class RestfulBuilder {
     }
 
     public static ResponseEntity<RestfulResponse> created(Object data, String message) {
-        return emitter(data, null, message, HttpStatus.CREATED);
+        return emitter(data, null, message, CREATED);
+    }
+
+    public static <R> ResponseEntity<R> accepted4Fallback() {
+        return new ResponseEntity<>(ACCEPTED);
     }
 
     /**
@@ -77,7 +91,11 @@ public class RestfulBuilder {
      * @return
      */
     public static ResponseEntity<RestfulResponse> accepted(Object data, String message) {
-        return emitter(data, null, message, HttpStatus.ACCEPTED);
+        return emitter(data, null, message, ACCEPTED);
+    }
+
+    public static <R> ResponseEntity<R> deleted4Fallback() {
+        return new ResponseEntity<>(NO_CONTENT);
     }
 
     /**
@@ -106,7 +124,11 @@ public class RestfulBuilder {
      * @return
      */
     public static ResponseEntity<RestfulResponse> deleted(Object data, String message) {
-        return emitter(data, null, message, HttpStatus.NO_CONTENT);
+        return emitter(data, null, message, NO_CONTENT);
+    }
+
+    public static <R> ResponseEntity<R> badRequest4Fallback() {
+        return new ResponseEntity<>(BAD_REQUEST);
     }
 
     /**
@@ -142,7 +164,11 @@ public class RestfulBuilder {
 
 
     public static ResponseEntity<RestfulResponse> badRequest(Object data, ErrorResponse errRes, String message) {
-        return emitter(data, errRes, message, HttpStatus.BAD_REQUEST);
+        return emitter(data, errRes, message, BAD_REQUEST);
+    }
+
+    public static <R> ResponseEntity<R> unauthorized4Fallback() {
+        return new ResponseEntity<>(UNAUTHORIZED);
     }
 
     /**
@@ -171,7 +197,11 @@ public class RestfulBuilder {
      * @return
      */
     public static ResponseEntity<RestfulResponse> unauthorized(Object data, ErrorResponse errRes, String message) {
-        return emitter(data, errRes, message, HttpStatus.UNAUTHORIZED);
+        return emitter(data, errRes, message, UNAUTHORIZED);
+    }
+
+    public static <R> ResponseEntity<R> forbidden4Fallback() {
+        return new ResponseEntity<>(FORBIDDEN);
     }
 
     /**
@@ -212,7 +242,11 @@ public class RestfulBuilder {
      * @return
      */
     public static ResponseEntity<RestfulResponse> forbidden(Object data, ErrorResponse errRes, String message) {
-        return emitter(data, errRes, message, HttpStatus.FORBIDDEN);
+        return emitter(data, errRes, message, FORBIDDEN);
+    }
+
+    public static <R> ResponseEntity<R> notFound4Fallback() {
+        return new ResponseEntity<>(NOT_FOUND);
     }
 
     /**
@@ -253,7 +287,11 @@ public class RestfulBuilder {
      * @return
      */
     public static ResponseEntity<RestfulResponse> notFound(Object data, ErrorResponse errRes, String message) {
-        return emitter(data, errRes, message, HttpStatus.NOT_FOUND);
+        return emitter(data, errRes, message, NOT_FOUND);
+    }
+
+    public static <R> ResponseEntity<R> unprocesableEntity4Fallback() {
+        return new ResponseEntity<R>(UNPROCESSABLE_ENTITY);
     }
 
     /**
@@ -294,15 +332,14 @@ public class RestfulBuilder {
      * @return
      */
     public static ResponseEntity<RestfulResponse> unprocesableEntity(Object data, ErrorResponse errRes, String message) {
-        return emitter(data, errRes, message, HttpStatus.UNPROCESSABLE_ENTITY);
+        return emitter(data, errRes, message, UNPROCESSABLE_ENTITY);
     }
 
 
-    /**
-     * 请求被锁定 不可用
-     *
-     * @return
-     */
+    public static <R> ResponseEntity<R> locked4Fallback() {
+        return new ResponseEntity<>(HttpStatus.LOCKED);
+    }
+
     public static ResponseEntity<RestfulResponse> locked() {
         return locked(null);
     }
@@ -337,6 +374,16 @@ public class RestfulBuilder {
      */
     public static ResponseEntity<RestfulResponse> locked(Object data, ErrorResponse errRes, String message) {
         return emitter(data, errRes, message, HttpStatus.LOCKED);
+    }
+
+    /**
+     * 内部错误
+     *
+     * @param <R>
+     * @return
+     */
+    public static <R> ResponseEntity<R> serverError4Fallback() {
+        return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
     /**
