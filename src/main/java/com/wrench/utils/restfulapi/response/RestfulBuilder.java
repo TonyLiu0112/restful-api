@@ -181,7 +181,7 @@ public class RestfulBuilder {
     }
 
     public static ResponseEntity<RestfulResponse> unauthorized(Object data) {
-        return unauthorized(null, null);
+        return unauthorized(data, null);
     }
 
     public static ResponseEntity<RestfulResponse> unauthorized(Object data, String message) {
