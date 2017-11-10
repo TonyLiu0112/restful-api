@@ -1,6 +1,8 @@
 package com.wrench.utils.restfulapi.response;
 
-public class PageResponse {
+import java.io.Serializable;
+
+public class Page implements Serializable {
 
     //当前页
     private int pageNum;
@@ -23,13 +25,13 @@ public class PageResponse {
     //下一页
     private int nextPage;
     //是否为第一页
-    private boolean isFirstPage = false;
+    private boolean isFirstPage;
     //是否为最后一页
-    private boolean isLastPage = false;
+    private boolean isLastPage;
     //是否有前一页
-    private boolean hasPreviousPage = false;
+    private boolean hasPreviousPage;
     //是否有下一页
-    private boolean hasNextPage = false;
+    private boolean hasNextPage;
     //导航页码数
     private int navigatePages;
     //所有导航页号
@@ -119,20 +121,20 @@ public class PageResponse {
         this.nextPage = nextPage;
     }
 
-    public boolean isFirstPage() {
+    public boolean isIsFirstPage() {
         return isFirstPage;
     }
 
-    public void setFirstPage(boolean firstPage) {
-        isFirstPage = firstPage;
+    public void setIsFirstPage(boolean isFirstPage) {
+        this.isFirstPage = isFirstPage;
     }
 
-    public boolean isLastPage() {
+    public boolean isIsLastPage() {
         return isLastPage;
     }
 
-    public void setLastPage(boolean lastPage) {
-        isLastPage = lastPage;
+    public void setIsLastPage(boolean isLastPage) {
+        this.isLastPage = isLastPage;
     }
 
     public boolean isHasPreviousPage() {

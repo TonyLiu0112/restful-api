@@ -1,6 +1,8 @@
 package com.wrench.utils.restfulapi.response;
 
-public class ErrorResponse {
+import java.io.Serializable;
+
+public class AdditionPayload implements Serializable {
 
     /**
      * 业务响应码
@@ -9,10 +11,10 @@ public class ErrorResponse {
 
     private String message;
 
-    public ErrorResponse() {
+    public AdditionPayload() {
     }
 
-    public ErrorResponse(String code, String message) {
+    public AdditionPayload(String code, String message) {
         this.code = code;
         this.message = message;
     }

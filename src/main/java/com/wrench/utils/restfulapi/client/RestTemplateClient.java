@@ -1,8 +1,8 @@
-package com.wrench.utils.restfulapi;
+package com.wrench.utils.restfulapi.client;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
-import com.wrench.utils.restfulapi.response.RestfulResponse;
+import com.wrench.utils.restfulapi.response.RestResponse;
 import jodd.util.StringUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -16,26 +16,29 @@ import java.util.List;
 
 /**
  * {@link RestTemplate} 包装类
+ * <p>
+ * 当前版本已废弃, 请使用{@link RestTemplateWrapper}
  *
  * @author Tony
  */
-public class RestTemplateWrapper {
+@Deprecated
+public class RestTemplateClient {
 
     private final RestTemplate restTemplate;
     private final HttpOps ops;
 
-    public RestTemplateWrapper(RestTemplate restTemplate) {
+    public RestTemplateClient(RestTemplate restTemplate) {
         this.restTemplate = restTemplate;
         ops = new HttpOps();
     }
 
     // get
 
-    public RestfulResponse get(String uri) throws Exception {
+    public RestResponse get(String uri) throws Exception {
         return ops.get(uri, null, null);
     }
 
-    public <T> RestfulResponse<T> get(String uri, Class<T> dataClazz) throws Exception {
+    public <T> RestResponse<T> get(String uri, Class<T> dataClazz) throws Exception {
         return ops.get(uri, dataClazz, new Parser<T, T>() {
             @Override
             public T parser(String dataText, Class<T> clazz) {
@@ -44,7 +47,7 @@ public class RestTemplateWrapper {
         });
     }
 
-    public <T> RestfulResponse<List<T>> getList(String uri, Class<T> dataClazz) throws Exception {
+    public <T> RestResponse<List<T>> getList(String uri, Class<T> dataClazz) throws Exception {
         return ops.get(uri, dataClazz, new Parser<T, List<T>>() {
             @Override
             public List<T> parser(String dataText, Class<T> clazz) {
@@ -55,11 +58,11 @@ public class RestTemplateWrapper {
 
     // post
 
-    public RestfulResponse post(String uri, Object req) throws Exception {
+    public RestResponse post(String uri, Object req) throws Exception {
         return ops.post(uri, req, null, null);
     }
 
-    public <T> RestfulResponse<T> post(String uri, Object req, Class<T> dataClazz) throws Exception {
+    public <T> RestResponse<T> post(String uri, Object req, Class<T> dataClazz) throws Exception {
         return ops.post(uri, req, dataClazz, new Parser<T, T>() {
             @Override
             public T parser(String dataText, Class<T> clazz) {
@@ -68,7 +71,7 @@ public class RestTemplateWrapper {
         });
     }
 
-    public <T> RestfulResponse<List<T>> postList(String uri, Object req, Class<T> dataClazz) throws Exception {
+    public <T> RestResponse<List<T>> postList(String uri, Object req, Class<T> dataClazz) throws Exception {
         return ops.post(uri, req, dataClazz, new Parser<T, List<T>>() {
             @Override
             public List<T> parser(String dataText, Class<T> clazz) {
@@ -79,21 +82,21 @@ public class RestTemplateWrapper {
 
     // delete
 
-    public RestfulResponse delete(String uri) throws Exception {
+    public RestResponse delete(String uri) throws Exception {
         return ops.delete(uri, null);
     }
 
-    public RestfulResponse delete(String uri, Object req) throws Exception {
+    public RestResponse delete(String uri, Object req) throws Exception {
         return ops.delete(uri, req);
     }
 
     // put
 
-    public RestfulResponse put(String uri, Object req) throws Exception {
+    public RestResponse put(String uri, Object req) throws Exception {
         return ops.put(uri, req, null, null);
     }
 
-    public <T> RestfulResponse<T> put(String uri, Object req, Class<T> dataClazz) throws Exception {
+    public <T> RestResponse<T> put(String uri, Object req, Class<T> dataClazz) throws Exception {
         return ops.put(uri, req, dataClazz, new Parser<T, T>() {
             @Override
             public T parser(String dataText, Class<T> clazz) {
@@ -110,11 +113,11 @@ public class RestTemplateWrapper {
 
         private Logger log = LoggerFactory.getLogger(HttpOps.class);
 
-        <T, R> RestfulResponse<R> get(String uri, Class<T> dataClazz, Parser<T, R> parser) throws Exception {
-            RestfulResponse<R> restResponse = new RestfulResponse<>();
+        <T, R> RestResponse<R> get(String uri, Class<T> dataClazz, Parser<T, R> parser) throws Exception {
+            RestResponse<R> restResponse = new RestResponse<>();
             try {
                 log.debug("Start requesting(GET) remote resources: {}", uri);
-                ResponseEntity<RestfulResponse> responseEntity = restTemplate.getForEntity(uri, RestfulResponse.class);
+                ResponseEntity<RestResponse> responseEntity = restTemplate.getForEntity(uri, RestResponse.class);
                 log.debug("Http response: {}", JSON.toJSONString(responseEntity, true));
                 restResponse = responseHandler(responseEntity, dataClazz, parser);
             } catch (HttpStatusCodeException e) {
@@ -128,11 +131,11 @@ public class RestTemplateWrapper {
             return restResponse;
         }
 
-        <T, R> RestfulResponse<R> post(String uri, Object req, Class<T> dataClazz, Parser<T, R> parser) throws Exception {
-            RestfulResponse<R> restResponse = new RestfulResponse<>();
+        <T, R> RestResponse<R> post(String uri, Object req, Class<T> dataClazz, Parser<T, R> parser) throws Exception {
+            RestResponse<R> restResponse = new RestResponse<>();
             try {
                 log.debug("Start requesting(POST) remote resources: {}", uri);
-                ResponseEntity<RestfulResponse> responseEntity = restTemplate.postForEntity(new URI(uri), req, RestfulResponse.class);
+                ResponseEntity<RestResponse> responseEntity = restTemplate.postForEntity(new URI(uri), req, RestResponse.class);
                 log.debug("Http response: {}", JSON.toJSONString(responseEntity, true));
                 restResponse = responseHandler(responseEntity, dataClazz, parser);
             } catch (HttpStatusCodeException e) {
@@ -146,12 +149,12 @@ public class RestTemplateWrapper {
             return restResponse;
         }
 
-        RestfulResponse<Object> delete(String uri, Object req) throws Exception {
-            RestfulResponse<Object> restResponse = new RestfulResponse<>();
+        RestResponse<Object> delete(String uri, Object req) throws Exception {
+            RestResponse<Object> restResponse = new RestResponse<>();
             try {
                 log.debug("Start requesting(DELETE) remote resources: {}", uri);
                 HttpEntity httpEntity = new RequestEntity<>(req, HttpMethod.DELETE, new URI(uri));
-                ResponseEntity<RestfulResponse> responseEntity = restTemplate.exchange(uri, HttpMethod.DELETE, httpEntity, RestfulResponse.class);
+                ResponseEntity<RestResponse> responseEntity = restTemplate.exchange(uri, HttpMethod.DELETE, httpEntity, RestResponse.class);
                 log.debug("Http response: {}", JSON.toJSONString(responseEntity, true));
                 restResponse.setStatus(responseEntity.getStatusCode());
                 restResponse.setMessage(responseEntity.getStatusCode().getReasonPhrase());
@@ -166,11 +169,11 @@ public class RestTemplateWrapper {
             return restResponse;
         }
 
-        <T, R> RestfulResponse<R> put(String uri, Object req, Class<T> dataClazz, Parser<T, R> parser) throws Exception {
-            RestfulResponse<R> restResponse = new RestfulResponse<>();
+        <T, R> RestResponse<R> put(String uri, Object req, Class<T> dataClazz, Parser<T, R> parser) throws Exception {
+            RestResponse<R> restResponse = new RestResponse<>();
             try {
                 HttpEntity httpEntity = new RequestEntity<>(req, HttpMethod.PUT, new URI(uri));
-                ResponseEntity<RestfulResponse> responseEntity = restTemplate.exchange(uri, HttpMethod.PUT, httpEntity, RestfulResponse.class);
+                ResponseEntity<RestResponse> responseEntity = restTemplate.exchange(uri, HttpMethod.PUT, httpEntity, RestResponse.class);
                 log.debug("Http response: {}", JSON.toJSONString(responseEntity, true));
                 restResponse = responseHandler(responseEntity, dataClazz, parser);
             } catch (HttpStatusCodeException e) {
@@ -184,9 +187,9 @@ public class RestTemplateWrapper {
             return restResponse;
         }
 
-        private <T, R> RestfulResponse<R> responseHandler(ResponseEntity<RestfulResponse> responseEntity, Class<T> responseClazz, Parser<T, R> parser) {
-            RestfulResponse<R> restResponse = new RestfulResponse<>();
-            RestfulResponse body = responseEntity.getBody();
+        private <T, R> RestResponse<R> responseHandler(ResponseEntity<RestResponse> responseEntity, Class<T> responseClazz, Parser<T, R> parser) {
+            RestResponse<R> restResponse = new RestResponse<>();
+            RestResponse body = responseEntity.getBody();
             restResponse.setStatus(body.getStatus());
             restResponse.setMessage(body.getMessage());
             if (responseClazz != null) {
@@ -197,8 +200,8 @@ public class RestTemplateWrapper {
             return restResponse;
         }
 
-        private void failedHandler(RestfulResponse restResponse, String errorJson) {
-            RestfulResponse errRes = JSONObject.parseObject(errorJson, RestfulResponse.class);
+        private void failedHandler(RestResponse restResponse, String errorJson) {
+            RestResponse errRes = JSONObject.parseObject(errorJson, RestResponse.class);
             BeanUtils.copyProperties(errRes, restResponse);
         }
 

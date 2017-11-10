@@ -1,11 +1,18 @@
-package com.wrench.utils.restfulapi.response;
+package com.wrench.utils.restfulapi;
 
+import com.github.pagehelper.PageInfo;
+import com.wrench.utils.restfulapi.response.AdditionPayload;
+import com.wrench.utils.restfulapi.response.Page;
+import com.wrench.utils.restfulapi.response.RestResponse;
+import org.springframework.beans.BeanUtils;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
+import java.util.List;
+
 import static org.springframework.http.HttpStatus.*;
 
-public class RestfulBuilder {
+public class RestBuilder {
 
     public static <R> ResponseEntity<R> ok4Fallback() {
         return new ResponseEntity<>(OK);
@@ -16,7 +23,7 @@ public class RestfulBuilder {
      *
      * @return
      */
-    public static ResponseEntity<RestfulResponse> ok() {
+    public static ResponseEntity<RestResponse> ok() {
         return ok(null);
     }
 
@@ -26,7 +33,7 @@ public class RestfulBuilder {
      * @param data
      * @return
      */
-    public static ResponseEntity<RestfulResponse> ok(Object data) {
+    public static ResponseEntity<RestResponse> ok(Object data) {
         return ok(data, null);
     }
 
@@ -36,8 +43,23 @@ public class RestfulBuilder {
      * @param data
      * @return
      */
-    public static ResponseEntity<RestfulResponse> ok(Object data, String message) {
+    public static ResponseEntity<RestResponse> ok(Object data, String message) {
         return emitter(data, null, message, OK);
+    }
+
+    public static ResponseEntity<RestResponse> ok4Page(PageInfo<?> pageInfo) {
+        RestResponse restResponse = new RestResponse();
+        Page page = new Page();
+        BeanUtils.copyProperties(pageInfo, page);
+        restResponse.setDatas(pageInfo.getList());
+        restResponse.setPage(page);
+        return restResponse.send(OK);
+    }
+
+    public static ResponseEntity<RestResponse> ok4List(List list) {
+        RestResponse restResponse = new RestResponse();
+        restResponse.setDatas(list);
+        return restResponse.send(OK);
     }
 
     public static <R> ResponseEntity<R> created4Fallback() {
@@ -49,7 +71,7 @@ public class RestfulBuilder {
      *
      * @return
      */
-    public static ResponseEntity<RestfulResponse> created() {
+    public static ResponseEntity<RestResponse> created() {
         return created(null);
     }
 
@@ -59,11 +81,11 @@ public class RestfulBuilder {
      * @param data
      * @return
      */
-    public static ResponseEntity<RestfulResponse> created(Object data) {
+    public static ResponseEntity<RestResponse> created(Object data) {
         return created(data, null);
     }
 
-    public static ResponseEntity<RestfulResponse> created(Object data, String message) {
+    public static ResponseEntity<RestResponse> created(Object data, String message) {
         return emitter(data, null, message, CREATED);
     }
 
@@ -76,11 +98,11 @@ public class RestfulBuilder {
      *
      * @return
      */
-    public static ResponseEntity<RestfulResponse> accepted() {
+    public static ResponseEntity<RestResponse> accepted() {
         return accepted(null);
     }
 
-    public static ResponseEntity<RestfulResponse> accepted(Object data) {
+    public static ResponseEntity<RestResponse> accepted(Object data) {
         return accepted(data, null);
     }
 
@@ -90,11 +112,11 @@ public class RestfulBuilder {
      * @param data
      * @return
      */
-    public static ResponseEntity<RestfulResponse> accepted(Object data, String message) {
+    public static ResponseEntity<RestResponse> accepted(Object data, String message) {
         return emitter(data, null, message, ACCEPTED);
     }
 
-    public static <R> ResponseEntity<R> deleted4Fallback() {
+    public static <R> ResponseEntity<R> noContent4Fallback() {
         return new ResponseEntity<>(NO_CONTENT);
     }
 
@@ -103,8 +125,8 @@ public class RestfulBuilder {
      *
      * @return
      */
-    public static ResponseEntity<RestfulResponse> deleted() {
-        return deleted(null);
+    public static ResponseEntity<RestResponse> noContent() {
+        return noContent(null);
     }
 
     /**
@@ -113,8 +135,8 @@ public class RestfulBuilder {
      * @param data
      * @return
      */
-    public static ResponseEntity<RestfulResponse> deleted(Object data) {
-        return deleted(data, null);
+    public static ResponseEntity<RestResponse> noContent(Object data) {
+        return noContent(data, null);
     }
 
     /**
@@ -123,7 +145,7 @@ public class RestfulBuilder {
      * @param data
      * @return
      */
-    public static ResponseEntity<RestfulResponse> deleted(Object data, String message) {
+    public static ResponseEntity<RestResponse> noContent(Object data, String message) {
         return emitter(data, null, message, NO_CONTENT);
     }
 
@@ -136,7 +158,7 @@ public class RestfulBuilder {
      *
      * @return
      */
-    public static ResponseEntity<RestfulResponse> badRequest() {
+    public static ResponseEntity<RestResponse> badRequest() {
         return badRequest(null);
     }
 
@@ -146,7 +168,7 @@ public class RestfulBuilder {
      * @param data
      * @return
      */
-    public static ResponseEntity<RestfulResponse> badRequest(Object data) {
+    public static ResponseEntity<RestResponse> badRequest(Object data) {
         return badRequest(data, null);
     }
 
@@ -156,14 +178,14 @@ public class RestfulBuilder {
      * @param data
      * @return
      */
-    public static ResponseEntity<RestfulResponse> badRequest(Object data, String message) {
-        if (data != null && data instanceof ErrorResponse)
-            return badRequest(null, (ErrorResponse) data, message);
+    public static ResponseEntity<RestResponse> badRequest(Object data, String message) {
+        if (data != null && data instanceof AdditionPayload)
+            return badRequest(null, (AdditionPayload) data, message);
         return badRequest(data, null, message);
     }
 
 
-    public static ResponseEntity<RestfulResponse> badRequest(Object data, ErrorResponse errRes, String message) {
+    public static ResponseEntity<RestResponse> badRequest(Object data, AdditionPayload errRes, String message) {
         return emitter(data, errRes, message, BAD_REQUEST);
     }
 
@@ -176,17 +198,17 @@ public class RestfulBuilder {
      *
      * @return
      */
-    public static ResponseEntity<RestfulResponse> unauthorized() {
+    public static ResponseEntity<RestResponse> unauthorized() {
         return unauthorized(null);
     }
 
-    public static ResponseEntity<RestfulResponse> unauthorized(Object data) {
+    public static ResponseEntity<RestResponse> unauthorized(Object data) {
         return unauthorized(data, null);
     }
 
-    public static ResponseEntity<RestfulResponse> unauthorized(Object data, String message) {
-        if (data != null && data instanceof ErrorResponse)
-            return unauthorized(null, (ErrorResponse) data, message);
+    public static ResponseEntity<RestResponse> unauthorized(Object data, String message) {
+        if (data != null && data instanceof AdditionPayload)
+            return unauthorized(null, (AdditionPayload) data, message);
         return unauthorized(data, null, message);
     }
 
@@ -196,7 +218,7 @@ public class RestfulBuilder {
      * @param data
      * @return
      */
-    public static ResponseEntity<RestfulResponse> unauthorized(Object data, ErrorResponse errRes, String message) {
+    public static ResponseEntity<RestResponse> unauthorized(Object data, AdditionPayload errRes, String message) {
         return emitter(data, errRes, message, UNAUTHORIZED);
     }
 
@@ -209,7 +231,7 @@ public class RestfulBuilder {
      *
      * @return
      */
-    public static ResponseEntity<RestfulResponse> forbidden() {
+    public static ResponseEntity<RestResponse> forbidden() {
         return forbidden(null);
     }
 
@@ -219,7 +241,7 @@ public class RestfulBuilder {
      * @param data
      * @return
      */
-    public static ResponseEntity<RestfulResponse> forbidden(Object data) {
+    public static ResponseEntity<RestResponse> forbidden(Object data) {
         return forbidden(data, null);
     }
 
@@ -229,9 +251,9 @@ public class RestfulBuilder {
      * @param data
      * @return
      */
-    public static ResponseEntity<RestfulResponse> forbidden(Object data, String message) {
-        if (data != null && data instanceof ErrorResponse)
-            return forbidden(null, (ErrorResponse) data, message);
+    public static ResponseEntity<RestResponse> forbidden(Object data, String message) {
+        if (data != null && data instanceof AdditionPayload)
+            return forbidden(null, (AdditionPayload) data, message);
         return forbidden(data, null, message);
     }
 
@@ -241,7 +263,7 @@ public class RestfulBuilder {
      * @param data
      * @return
      */
-    public static ResponseEntity<RestfulResponse> forbidden(Object data, ErrorResponse errRes, String message) {
+    public static ResponseEntity<RestResponse> forbidden(Object data, AdditionPayload errRes, String message) {
         return emitter(data, errRes, message, FORBIDDEN);
     }
 
@@ -254,7 +276,7 @@ public class RestfulBuilder {
      *
      * @return
      */
-    public static ResponseEntity<RestfulResponse> notFound() {
+    public static ResponseEntity<RestResponse> notFound() {
         return notFound(null);
     }
 
@@ -264,7 +286,7 @@ public class RestfulBuilder {
      * @param data
      * @return
      */
-    public static ResponseEntity<RestfulResponse> notFound(Object data) {
+    public static ResponseEntity<RestResponse> notFound(Object data) {
         return notFound(data, null);
     }
 
@@ -274,9 +296,9 @@ public class RestfulBuilder {
      * @param data
      * @return
      */
-    public static ResponseEntity<RestfulResponse> notFound(Object data, String message) {
-        if (data != null && data instanceof ErrorResponse)
-            return notFound(null, (ErrorResponse) data, message);
+    public static ResponseEntity<RestResponse> notFound(Object data, String message) {
+        if (data != null && data instanceof AdditionPayload)
+            return notFound(null, (AdditionPayload) data, message);
         return notFound(data, null, message);
     }
 
@@ -286,7 +308,7 @@ public class RestfulBuilder {
      * @param data
      * @return
      */
-    public static ResponseEntity<RestfulResponse> notFound(Object data, ErrorResponse errRes, String message) {
+    public static ResponseEntity<RestResponse> notFound(Object data, AdditionPayload errRes, String message) {
         return emitter(data, errRes, message, NOT_FOUND);
     }
 
@@ -299,7 +321,7 @@ public class RestfulBuilder {
      *
      * @return
      */
-    public static ResponseEntity<RestfulResponse> unprocesableEntity() {
+    public static ResponseEntity<RestResponse> unprocesableEntity() {
         return unprocesableEntity(null);
     }
 
@@ -309,7 +331,7 @@ public class RestfulBuilder {
      * @param data
      * @return
      */
-    public static ResponseEntity<RestfulResponse> unprocesableEntity(Object data) {
+    public static ResponseEntity<RestResponse> unprocesableEntity(Object data) {
         return unprocesableEntity(data, null);
     }
 
@@ -319,9 +341,9 @@ public class RestfulBuilder {
      * @param data
      * @return
      */
-    public static ResponseEntity<RestfulResponse> unprocesableEntity(Object data, String message) {
-        if (data != null && data instanceof ErrorResponse)
-            return unprocesableEntity(null, (ErrorResponse) data, message);
+    public static ResponseEntity<RestResponse> unprocesableEntity(Object data, String message) {
+        if (data != null && data instanceof AdditionPayload)
+            return unprocesableEntity(null, (AdditionPayload) data, message);
         return unprocesableEntity(data, null, message);
     }
 
@@ -331,7 +353,7 @@ public class RestfulBuilder {
      * @param data
      * @return
      */
-    public static ResponseEntity<RestfulResponse> unprocesableEntity(Object data, ErrorResponse errRes, String message) {
+    public static ResponseEntity<RestResponse> unprocesableEntity(Object data, AdditionPayload errRes, String message) {
         return emitter(data, errRes, message, UNPROCESSABLE_ENTITY);
     }
 
@@ -340,7 +362,7 @@ public class RestfulBuilder {
         return new ResponseEntity<>(HttpStatus.LOCKED);
     }
 
-    public static ResponseEntity<RestfulResponse> locked() {
+    public static ResponseEntity<RestResponse> locked() {
         return locked(null);
     }
 
@@ -350,7 +372,7 @@ public class RestfulBuilder {
      * @param data
      * @return
      */
-    public static ResponseEntity<RestfulResponse> locked(Object data) {
+    public static ResponseEntity<RestResponse> locked(Object data) {
         return locked(data, null);
     }
 
@@ -360,9 +382,9 @@ public class RestfulBuilder {
      * @param data
      * @return
      */
-    public static ResponseEntity<RestfulResponse> locked(Object data, String message) {
-        if (data != null && data instanceof ErrorResponse)
-            return locked(null, (ErrorResponse) data, message);
+    public static ResponseEntity<RestResponse> locked(Object data, String message) {
+        if (data != null && data instanceof AdditionPayload)
+            return locked(null, (AdditionPayload) data, message);
         return locked(data, null, message);
     }
 
@@ -372,7 +394,7 @@ public class RestfulBuilder {
      * @param data
      * @return
      */
-    public static ResponseEntity<RestfulResponse> locked(Object data, ErrorResponse errRes, String message) {
+    public static ResponseEntity<RestResponse> locked(Object data, AdditionPayload errRes, String message) {
         return emitter(data, errRes, message, HttpStatus.LOCKED);
     }
 
@@ -391,7 +413,7 @@ public class RestfulBuilder {
      *
      * @return
      */
-    public static ResponseEntity<RestfulResponse> serverError() {
+    public static ResponseEntity<RestResponse> serverError() {
         return serverError(null);
     }
 
@@ -401,7 +423,7 @@ public class RestfulBuilder {
      * @param data
      * @return
      */
-    public static ResponseEntity<RestfulResponse> serverError(Object data) {
+    public static ResponseEntity<RestResponse> serverError(Object data) {
         return serverError(data, null);
     }
 
@@ -411,9 +433,9 @@ public class RestfulBuilder {
      * @param data
      * @return
      */
-    public static ResponseEntity<RestfulResponse> serverError(Object data, String message) {
-        if (data != null && data instanceof ErrorResponse)
-            return serverError(null, (ErrorResponse) data, message);
+    public static ResponseEntity<RestResponse> serverError(Object data, String message) {
+        if (data != null && data instanceof AdditionPayload)
+            return serverError(null, (AdditionPayload) data, message);
         return serverError(data, null, message);
     }
 
@@ -423,7 +445,7 @@ public class RestfulBuilder {
      * @param data
      * @return
      */
-    public static ResponseEntity<RestfulResponse> serverError(Object data, ErrorResponse errRes, String message) {
+    public static ResponseEntity<RestResponse> serverError(Object data, AdditionPayload errRes, String message) {
         return emitter(data, errRes, message, HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
@@ -432,7 +454,7 @@ public class RestfulBuilder {
      *
      * @return
      */
-    public static ResponseEntity<RestfulResponse> notImplemented() {
+    public static ResponseEntity<RestResponse> notImplemented() {
         return notImplemented(null);
     }
 
@@ -442,7 +464,7 @@ public class RestfulBuilder {
      * @param data
      * @return
      */
-    public static ResponseEntity<RestfulResponse> notImplemented(Object data) {
+    public static ResponseEntity<RestResponse> notImplemented(Object data) {
         return notImplemented(data, null);
     }
 
@@ -452,9 +474,9 @@ public class RestfulBuilder {
      * @param data
      * @return
      */
-    public static ResponseEntity<RestfulResponse> notImplemented(Object data, String message) {
-        if (data != null && data instanceof ErrorResponse)
-            return notImplemented(null, (ErrorResponse) data, message);
+    public static ResponseEntity<RestResponse> notImplemented(Object data, String message) {
+        if (data != null && data instanceof AdditionPayload)
+            return notImplemented(null, (AdditionPayload) data, message);
         return notImplemented(data, null, message);
     }
 
@@ -464,13 +486,13 @@ public class RestfulBuilder {
      * @param data
      * @return
      */
-    public static ResponseEntity<RestfulResponse> notImplemented(Object data, ErrorResponse errRes, String message) {
+    public static ResponseEntity<RestResponse> notImplemented(Object data, AdditionPayload errRes, String message) {
         return emitter(data, errRes, message, HttpStatus.NOT_IMPLEMENTED);
     }
 
 
-    private static ResponseEntity<RestfulResponse> emitter(Object data, ErrorResponse errRes, String message, HttpStatus httpStatus) {
-        return new RestfulResponse(data, errRes, message).send(httpStatus);
+    private static ResponseEntity<RestResponse> emitter(Object data, AdditionPayload errRes, String message, HttpStatus httpStatus) {
+        return new RestResponse(data, errRes, message).send(httpStatus);
     }
 
 }
