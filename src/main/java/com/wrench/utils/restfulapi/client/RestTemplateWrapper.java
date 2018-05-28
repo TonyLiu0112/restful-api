@@ -103,7 +103,18 @@ public class RestTemplateWrapper implements RestOps {
     private RestResponse errorHandler(Exception ex) {
         if (ex instanceof HttpStatusCodeException) {
             HttpStatusCodeException e = (HttpStatusCodeException) ex;
-            return JSON.parseObject(e.getResponseBodyAsString(), RestResponse.class);
+            try {
+                RestResponse restResponse = JSON.parseObject(e.getResponseBodyAsString(), RestResponse.class);
+                if (restResponse == null || restResponse.getStatus() == null)
+                    throw e;
+                return restResponse;
+            } catch (Exception e1) {
+                logger.error("调用服务异常.", e1);
+                RestResponse errorRes = new RestResponse();
+                errorRes.setStatus(e.getStatusCode());
+                errorRes.setMessage(e.getMessage());
+                return errorRes;
+            }
         } else {
             logger.error("调用服务异常.", ex);
             RestResponse errorRes = new RestResponse();

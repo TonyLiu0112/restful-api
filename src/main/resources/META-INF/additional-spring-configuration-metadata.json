@@ -1,22 +1,33 @@
 {
   "properties": [
     {
-      "name": "resttemplate.warpper.enable",
+      "name": "restful.client.enable",
       "type": "java.lang.Boolean",
-      "description": "是否启用",
+      "description": "是否启用.",
       "defaultValue": true
     },
     {
-      "name": "resttemplate.warpper.request-timeout",
+      "name": "restful.client.request-timeout",
       "type": "java.lang.Long",
-      "description": "http链接请求超时毫秒数",
+      "description": "http链接请求超时毫秒数.",
       "defaultValue": 2000
     },
     {
-      "name": "resttemplate.warpper.connection-timeout",
+      "name": "restful.client.connection-timeout",
       "type": "java.lang.Long",
-      "description": "http链接超时毫秒数",
+      "description": "http链接超时毫秒数.",
       "defaultValue": 2000
+    },
+    {
+      "name": "restful.oauth.enable",
+      "type": "java.lang.Boolean",
+      "description": "是否启用认证restTemplate.",
+      "defaultValue": true
+    },
+    {
+      "name": "restful.oauth.ignores",
+      "type": "java.util.List",
+      "description": "认证restTemplate忽略列表, 加入该列表的uri将不获取token直接发起访问."
     }
   ]
 }

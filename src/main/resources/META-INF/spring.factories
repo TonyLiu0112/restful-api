@@ -1,1 +1,3 @@
-org.springframework.boot.autoconfigure.EnableAutoConfiguration=com.wrench.utils.restfulapi.spring.conf.RestTemplateAutoConfiguration
+org.springframework.boot.autoconfigure.EnableAutoConfiguration=\
+  com.wrench.utils.restfulapi.oauth.RestfulOauth2AutoConfiguration,\
+  com.wrench.utils.restfulapi.client.RestfulClientAutoConfiguration

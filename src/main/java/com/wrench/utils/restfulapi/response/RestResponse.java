@@ -1,43 +1,34 @@
 package com.wrench.utils.restfulapi.response;
 
+import com.github.pagehelper.PageInfo;
+import io.swagger.annotations.ApiModel;
+import io.swagger.annotations.ApiModelProperty;
+import org.springframework.beans.BeanUtils;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
 import java.io.Serializable;
-import java.util.List;
+import java.util.Set;
 
+@ApiModel("统一接口响应对象")
 public class RestResponse<T> implements Serializable {
 
-    /**
-     * http响应码
-     */
+    @ApiModelProperty(required = true, name = "响应状态(HTTP状态码)")
     private HttpStatus status;
 
-    /**
-     * 响应数据
-     */
+    @ApiModelProperty("业务数据对象")
     private T data;
 
-    /**
-     * 响应数据集
-     */
-    private List<T> datas;
-
-    /**
-     * 分页信息
-     */
+    @ApiModelProperty("业务数据分页信息")
     private Page page;
 
-    /**
-     * 响应消息
-     */
+    @ApiModelProperty("响应消息")
     private String message;
 
-    /**
-     * 附加信息
-     * 用户描述业务/错误代码
-     */
+    @ApiModelProperty("业务附加信息(业务/错误代码)")
     private AdditionPayload addition;
+
+    private Set<LinkOps> links;
 
     public RestResponse() {
         this(null);
@@ -65,8 +56,15 @@ public class RestResponse<T> implements Serializable {
         return new ResponseEntity<>(this, status);
     }
 
-    public Object getData() {
+    public T getData() {
         return data;
+    }
+
+    public PageInfo<T> buildPageInfo() {
+        Page page = this.getPage();
+        com.github.pagehelper.Page<T> gitPage = new com.github.pagehelper.Page<>();
+        BeanUtils.copyProperties(page, gitPage);
+        return new PageInfo<>(gitPage);
     }
 
     public String getMessage() {
@@ -97,19 +95,19 @@ public class RestResponse<T> implements Serializable {
         this.addition = addition;
     }
 
-    public List<T> getDatas() {
-        return datas;
-    }
-
-    public void setDatas(List<T> datas) {
-        this.datas = datas;
-    }
-
     public Page getPage() {
         return page;
     }
 
     public void setPage(Page page) {
         this.page = page;
+    }
+
+    public Set<LinkOps> getLinks() {
+        return links;
+    }
+
+    public void setLinks(Set<LinkOps> links) {
+        this.links = links;
     }
 }

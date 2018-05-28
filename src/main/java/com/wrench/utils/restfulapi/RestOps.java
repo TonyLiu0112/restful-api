@@ -3,8 +3,6 @@ package com.wrench.utils.restfulapi;
 import com.wrench.utils.restfulapi.response.RestResponse;
 import org.springframework.core.ParameterizedTypeReference;
 
-import java.util.Map;
-
 /**
  * Restful操作基础模块
  *

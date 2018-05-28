@@ -1,9 +1,9 @@
-package com.wrench.utils.restfulapi.spring.conf;
+package com.wrench.utils.restfulapi.client;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
-@ConfigurationProperties(prefix = "resttemplate.warpper")
-public class ResttemplateProperties {
+@ConfigurationProperties(prefix = "restful.client")
+public class RestTemplateProperties {
 
     private Long requestTimeout = 2000L;
 

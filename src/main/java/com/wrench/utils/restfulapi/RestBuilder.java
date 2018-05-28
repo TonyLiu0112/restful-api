@@ -2,14 +2,20 @@ package com.wrench.utils.restfulapi;
 
 import com.github.pagehelper.PageInfo;
 import com.wrench.utils.restfulapi.response.AdditionPayload;
+import com.wrench.utils.restfulapi.response.EmptyResponse;
 import com.wrench.utils.restfulapi.response.Page;
 import com.wrench.utils.restfulapi.response.RestResponse;
 import org.springframework.beans.BeanUtils;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 
+import static com.wrench.utils.restfulapi.helper.DefaultErrorMsg.DEFAULT_SERVER_ERROR;
+import static com.wrench.utils.restfulapi.helper.DefaultErrorMsg.DEFAULT_SERVER_NOT_IMPLEMENT;
 import static org.springframework.http.HttpStatus.*;
 
 public class RestBuilder {
@@ -24,7 +30,7 @@ public class RestBuilder {
      * @return
      */
     public static ResponseEntity<RestResponse> ok() {
-        return ok(null);
+        return ok(new EmptyResponse());
     }
 
     /**
@@ -44,21 +50,38 @@ public class RestBuilder {
      * @return
      */
     public static ResponseEntity<RestResponse> ok(Object data, String message) {
-        return emitter(data, null, message, OK);
+        if (data instanceof AdditionPayload)
+            return ok(new EmptyResponse(), (AdditionPayload) data, message);
+        return ok(data, null, message);
+    }
+
+    public static ResponseEntity<RestResponse> ok(Object data, AdditionPayload errRes, String message) {
+        return emitter(data, errRes, message, OK);
+    }
+
+    public static ResponseEntity<RestResponse> ok4Page() {
+        return ok4Page(new PageInfo<>());
     }
 
     public static ResponseEntity<RestResponse> ok4Page(PageInfo<?> pageInfo) {
         RestResponse restResponse = new RestResponse();
         Page page = new Page();
         BeanUtils.copyProperties(pageInfo, page);
-        restResponse.setDatas(pageInfo.getList());
+        if (pageInfo.getList() != null && pageInfo.getList().size() > 0)
+            restResponse.setData(pageInfo.getList());
+        else
+            restResponse.setData(new ArrayList());
         restResponse.setPage(page);
         return restResponse.send(OK);
     }
 
+    public static ResponseEntity<RestResponse> ok4List() {
+        return ok4List(Collections.emptyList());
+    }
+
     public static ResponseEntity<RestResponse> ok4List(List list) {
         RestResponse restResponse = new RestResponse();
-        restResponse.setDatas(list);
+        restResponse.setData(list);
         return restResponse.send(OK);
     }
 
@@ -86,7 +109,13 @@ public class RestBuilder {
     }
 
     public static ResponseEntity<RestResponse> created(Object data, String message) {
-        return emitter(data, null, message, CREATED);
+        if (data instanceof AdditionPayload)
+            return created(null, (AdditionPayload) data, message);
+        return created(data, null, message);
+    }
+
+    public static ResponseEntity<RestResponse> created(Object data, AdditionPayload errRes, String message) {
+        return emitter(data, errRes, message, CREATED);
     }
 
     public static <R> ResponseEntity<R> accepted4Fallback() {
@@ -179,7 +208,7 @@ public class RestBuilder {
      * @return
      */
     public static ResponseEntity<RestResponse> badRequest(Object data, String message) {
-        if (data != null && data instanceof AdditionPayload)
+        if (data instanceof AdditionPayload)
             return badRequest(null, (AdditionPayload) data, message);
         return badRequest(data, null, message);
     }
@@ -207,7 +236,7 @@ public class RestBuilder {
     }
 
     public static ResponseEntity<RestResponse> unauthorized(Object data, String message) {
-        if (data != null && data instanceof AdditionPayload)
+        if (data instanceof AdditionPayload)
             return unauthorized(null, (AdditionPayload) data, message);
         return unauthorized(data, null, message);
     }
@@ -252,7 +281,7 @@ public class RestBuilder {
      * @return
      */
     public static ResponseEntity<RestResponse> forbidden(Object data, String message) {
-        if (data != null && data instanceof AdditionPayload)
+        if (data instanceof AdditionPayload)
             return forbidden(null, (AdditionPayload) data, message);
         return forbidden(data, null, message);
     }
@@ -297,7 +326,7 @@ public class RestBuilder {
      * @return
      */
     public static ResponseEntity<RestResponse> notFound(Object data, String message) {
-        if (data != null && data instanceof AdditionPayload)
+        if (data instanceof AdditionPayload)
             return notFound(null, (AdditionPayload) data, message);
         return notFound(data, null, message);
     }
@@ -310,6 +339,51 @@ public class RestBuilder {
      */
     public static ResponseEntity<RestResponse> notFound(Object data, AdditionPayload errRes, String message) {
         return emitter(data, errRes, message, NOT_FOUND);
+    }
+
+    public static <R> ResponseEntity<R> methodNotAllowed4Fallback() {
+        return new ResponseEntity<>(METHOD_NOT_ALLOWED);
+    }
+
+    /**
+     * 资源未找到
+     *
+     * @return
+     */
+    public static ResponseEntity<RestResponse> methodNotAllowed() {
+        return methodNotAllowed(null);
+    }
+
+    /**
+     * 资源未找到
+     *
+     * @param data
+     * @return
+     */
+    public static ResponseEntity<RestResponse> methodNotAllowed(Object data) {
+        return methodNotAllowed(data, null);
+    }
+
+    /**
+     * 资源未找到
+     *
+     * @param data
+     * @return
+     */
+    public static ResponseEntity<RestResponse> methodNotAllowed(Object data, String message) {
+        if (data instanceof AdditionPayload)
+            return methodNotAllowed(null, (AdditionPayload) data, message);
+        return methodNotAllowed(data, null, message);
+    }
+
+    /**
+     * 资源未找到
+     *
+     * @param data
+     * @return
+     */
+    public static ResponseEntity<RestResponse> methodNotAllowed(Object data, AdditionPayload errRes, String message) {
+        return emitter(data, errRes, message, METHOD_NOT_ALLOWED);
     }
 
     public static <R> ResponseEntity<R> unprocesableEntity4Fallback() {
@@ -342,7 +416,7 @@ public class RestBuilder {
      * @return
      */
     public static ResponseEntity<RestResponse> unprocesableEntity(Object data, String message) {
-        if (data != null && data instanceof AdditionPayload)
+        if (data instanceof AdditionPayload)
             return unprocesableEntity(null, (AdditionPayload) data, message);
         return unprocesableEntity(data, null, message);
     }
@@ -383,7 +457,7 @@ public class RestBuilder {
      * @return
      */
     public static ResponseEntity<RestResponse> locked(Object data, String message) {
-        if (data != null && data instanceof AdditionPayload)
+        if (data instanceof AdditionPayload)
             return locked(null, (AdditionPayload) data, message);
         return locked(data, null, message);
     }
@@ -414,7 +488,7 @@ public class RestBuilder {
      * @return
      */
     public static ResponseEntity<RestResponse> serverError() {
-        return serverError(null);
+        return serverError(new AdditionPayload(DEFAULT_SERVER_ERROR));
     }
 
     /**
@@ -434,7 +508,7 @@ public class RestBuilder {
      * @return
      */
     public static ResponseEntity<RestResponse> serverError(Object data, String message) {
-        if (data != null && data instanceof AdditionPayload)
+        if (data instanceof AdditionPayload)
             return serverError(null, (AdditionPayload) data, message);
         return serverError(data, null, message);
     }
@@ -455,7 +529,7 @@ public class RestBuilder {
      * @return
      */
     public static ResponseEntity<RestResponse> notImplemented() {
-        return notImplemented(null);
+        return notImplemented(new AdditionPayload(DEFAULT_SERVER_NOT_IMPLEMENT));
     }
 
     /**
@@ -475,7 +549,7 @@ public class RestBuilder {
      * @return
      */
     public static ResponseEntity<RestResponse> notImplemented(Object data, String message) {
-        if (data != null && data instanceof AdditionPayload)
+        if (data instanceof AdditionPayload)
             return notImplemented(null, (AdditionPayload) data, message);
         return notImplemented(data, null, message);
     }
@@ -490,7 +564,28 @@ public class RestBuilder {
         return emitter(data, errRes, message, HttpStatus.NOT_IMPLEMENTED);
     }
 
+    /**
+     * 自定义错误匹配
+     *
+     * @param exceptionMatcher 异常匹配器
+     * @param e                异常信息
+     * @return 响应信息
+     */
+    public static ResponseEntity<RestResponse> errorResponse(ExceptionMatcher exceptionMatcher, Exception e) {
+        if (exceptionMatcher != null) {
+            Optional<ResponseEntity<RestResponse>> matched = exceptionMatcher.matchException(e);
+            if (matched.isPresent())
+                return matched.get();
+        }
+        return serverError();
+    }
 
+    public static ResponseEntity<RestResponse> errorResponse(Exception e) {
+        return errorResponse(null, e);
+    }
+
+
+    @SuppressWarnings("unchecked")
     private static ResponseEntity<RestResponse> emitter(Object data, AdditionPayload errRes, String message, HttpStatus httpStatus) {
         return new RestResponse(data, errRes, message).send(httpStatus);
     }

@@ -21,6 +21,7 @@ import java.util.List;
  *
  * @author Tony
  */
+@SuppressWarnings({"DeprecatedIsStillUsed", "unused"})
 @Deprecated
 public class RestTemplateClient {
 
@@ -34,75 +35,50 @@ public class RestTemplateClient {
 
     // get
 
-    public RestResponse get(String uri) throws Exception {
+    public RestResponse get(String uri) {
         return ops.get(uri, null, null);
     }
 
-    public <T> RestResponse<T> get(String uri, Class<T> dataClazz) throws Exception {
-        return ops.get(uri, dataClazz, new Parser<T, T>() {
-            @Override
-            public T parser(String dataText, Class<T> clazz) {
-                return JSONObject.parseObject(dataText, clazz);
-            }
-        });
+    public <T> RestResponse<T> get(String uri, Class<T> dataClazz) {
+        return ops.get(uri, dataClazz, JSONObject::parseObject);
     }
 
-    public <T> RestResponse<List<T>> getList(String uri, Class<T> dataClazz) throws Exception {
-        return ops.get(uri, dataClazz, new Parser<T, List<T>>() {
-            @Override
-            public List<T> parser(String dataText, Class<T> clazz) {
-                return JSONObject.parseArray(dataText, clazz);
-            }
-        });
+    public <T> RestResponse<List<T>> getList(String uri, Class<T> dataClazz) {
+        return ops.get(uri, dataClazz, JSONObject::parseArray);
     }
 
     // post
 
-    public RestResponse post(String uri, Object req) throws Exception {
+    public RestResponse post(String uri, Object req) {
         return ops.post(uri, req, null, null);
     }
 
-    public <T> RestResponse<T> post(String uri, Object req, Class<T> dataClazz) throws Exception {
-        return ops.post(uri, req, dataClazz, new Parser<T, T>() {
-            @Override
-            public T parser(String dataText, Class<T> clazz) {
-                return JSONObject.parseObject(dataText, clazz);
-            }
-        });
+    public <T> RestResponse<T> post(String uri, Object req, Class<T> dataClazz) {
+        return ops.post(uri, req, dataClazz, JSONObject::parseObject);
     }
 
-    public <T> RestResponse<List<T>> postList(String uri, Object req, Class<T> dataClazz) throws Exception {
-        return ops.post(uri, req, dataClazz, new Parser<T, List<T>>() {
-            @Override
-            public List<T> parser(String dataText, Class<T> clazz) {
-                return JSONObject.parseArray(dataText, clazz);
-            }
-        });
+    public <T> RestResponse<List<T>> postList(String uri, Object req, Class<T> dataClazz) {
+        return ops.post(uri, req, dataClazz, JSONObject::parseArray);
     }
 
     // delete
 
-    public RestResponse delete(String uri) throws Exception {
+    public RestResponse delete(String uri) {
         return ops.delete(uri, null);
     }
 
-    public RestResponse delete(String uri, Object req) throws Exception {
+    public RestResponse delete(String uri, Object req) {
         return ops.delete(uri, req);
     }
 
     // put
 
-    public RestResponse put(String uri, Object req) throws Exception {
+    public RestResponse put(String uri, Object req) {
         return ops.put(uri, req, null, null);
     }
 
-    public <T> RestResponse<T> put(String uri, Object req, Class<T> dataClazz) throws Exception {
-        return ops.put(uri, req, dataClazz, new Parser<T, T>() {
-            @Override
-            public T parser(String dataText, Class<T> clazz) {
-                return JSONObject.parseObject(dataText, clazz);
-            }
-        });
+    public <T> RestResponse<T> put(String uri, Object req, Class<T> dataClazz) {
+        return ops.put(uri, req, dataClazz, JSONObject::parseObject);
     }
 
     private interface Parser<I, O> {
@@ -113,7 +89,7 @@ public class RestTemplateClient {
 
         private Logger log = LoggerFactory.getLogger(HttpOps.class);
 
-        <T, R> RestResponse<R> get(String uri, Class<T> dataClazz, Parser<T, R> parser) throws Exception {
+        <T, R> RestResponse<R> get(String uri, Class<T> dataClazz, Parser<T, R> parser) {
             RestResponse<R> restResponse = new RestResponse<>();
             try {
                 log.debug("Start requesting(GET) remote resources: {}", uri);
@@ -131,7 +107,7 @@ public class RestTemplateClient {
             return restResponse;
         }
 
-        <T, R> RestResponse<R> post(String uri, Object req, Class<T> dataClazz, Parser<T, R> parser) throws Exception {
+        <T, R> RestResponse<R> post(String uri, Object req, Class<T> dataClazz, Parser<T, R> parser) {
             RestResponse<R> restResponse = new RestResponse<>();
             try {
                 log.debug("Start requesting(POST) remote resources: {}", uri);
@@ -149,7 +125,7 @@ public class RestTemplateClient {
             return restResponse;
         }
 
-        RestResponse<Object> delete(String uri, Object req) throws Exception {
+        RestResponse<Object> delete(String uri, Object req) {
             RestResponse<Object> restResponse = new RestResponse<>();
             try {
                 log.debug("Start requesting(DELETE) remote resources: {}", uri);
@@ -169,7 +145,7 @@ public class RestTemplateClient {
             return restResponse;
         }
 
-        <T, R> RestResponse<R> put(String uri, Object req, Class<T> dataClazz, Parser<T, R> parser) throws Exception {
+        <T, R> RestResponse<R> put(String uri, Object req, Class<T> dataClazz, Parser<T, R> parser) {
             RestResponse<R> restResponse = new RestResponse<>();
             try {
                 HttpEntity httpEntity = new RequestEntity<>(req, HttpMethod.PUT, new URI(uri));
