@@ -13,7 +13,7 @@ import org.springframework.web.client.RestTemplate;
 
 @Configuration
 @EnableConfigurationProperties(RestfulOauth2Properties.class)
-@ConditionalOnProperty(prefix = "restful.oauth", value = "enable", matchIfMissing = true)
+@ConditionalOnProperty(prefix = "restful.oauth", value = "enable")
 @AutoConfigureOrder(0)
 public class RestfulOauth2AutoConfiguration {
 

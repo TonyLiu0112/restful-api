@@ -1,0 +1,3 @@
+# Restful风格工具类
+
+用于处理基于Spring中RestTemplate工具进行调用的简单工具包。
