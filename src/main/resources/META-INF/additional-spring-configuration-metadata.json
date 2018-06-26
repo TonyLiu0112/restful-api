@@ -22,7 +22,7 @@
       "name": "restful.oauth.enable",
       "type": "java.lang.Boolean",
       "description": "是否启用认证restTemplate.",
-      "defaultValue": true
+      "defaultValue": false
     },
     {
       "name": "restful.oauth.ignores",
